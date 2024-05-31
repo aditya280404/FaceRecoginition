@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+</head>
+<body>
+    <h1>Add User</h1>
+    <form action="/add" method="post">
+        <label for="newusername">New Username:</label>
+        <input type="text" id="newusername" name="newusername" required><br><br>
+        <label for="nimgs">Number of Images to Capture:</label>
+        <input type="number" id="nimgs" name="nimgs" min="1" max="100" required><br><br>
+        <input type="submit" value="Add User">
+    </form>
+    <h1>Person Detection</h1>
+    <div>
+        <p>This is the live stream of the camera with person detection.</p>
+        <p>Identified persons will be marked with their names, if recognized.</p>
+        <p>If a person is not recognized, they will be labeled as "Unknown".</p>
+        <video id="video" width="640" height="480" autoplay></video>
+    </div>
+    <h1>Face Recognition</h1>
+    <div>
+        <img id="video_feed" src="{{ url_for('video_feed') }}" alt="Video Feed">
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+
+        // Get access to the camera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing the camera: ', err);
+            }
+        }
+
+        startCamera();
+    </script>
+</body>
+</html>
