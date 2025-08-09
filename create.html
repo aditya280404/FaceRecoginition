@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Workflow</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <nav class="bg-white shadow mb-6">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">Automation Demo</h1>
+      <div>
+        <a href="index.html" class="mr-4 text-blue-600">Workflows</a>
+        <a href="create.html" class="text-blue-600 font-bold">New Workflow</a>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto px-4">
+    <h2 class="text-2xl font-bold mb-4">Create Workflow</h2>
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Name</label>
+      <input id="name" type="text" class="w-full border p-2 rounded" />
+    </div>
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Steps (JSON)</label>
+      <textarea id="steps" rows="10" class="w-full border p-2 font-mono rounded"></textarea>
+      <p class="text-sm text-gray-600 mt-1">Example: [ { "nodeType": "ai-agent", "params": { "prompt": "Hello" } } ]</p>
+    </div>
+    <button id="createBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Create</button>
+    <span id="status" class="ml-4 text-sm"></span>
+  </main>
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    document.getElementById('createBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value.trim();
+      const stepsText = document.getElementById('steps').value.trim();
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = '';
+      if (!name || !stepsText) {
+        statusEl.textContent = 'Name and steps are required';
+        statusEl.className = 'text-red-600';
+        return;
+      }
+      let steps;
+      try {
+        steps = JSON.parse(stepsText);
+      } catch (e) {
+        statusEl.textContent = 'Steps JSON is invalid';
+        statusEl.className = 'text-red-600';
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/api/workflows`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, steps })
+        });
+        if (!res.ok) throw new Error('Server error');
+        statusEl.textContent = 'Workflow created successfully';
+        statusEl.className = 'text-green-600';
+        // Redirect back to list after short delay
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      } catch (err) {
+        statusEl.textContent = 'Failed to create workflow';
+        statusEl.className = 'text-red-600';
+      }
+    });
+  </script>
+</body>
+</html>
