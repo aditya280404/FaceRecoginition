@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workflow Automation</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <nav class="bg-white shadow mb-6">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">Automation Demo</h1>
+      <div>
+        <a href="index.html" class="mr-4 text-blue-600">Workflows</a>
+        <a href="create.html" class="text-blue-600">New Workflow</a>
+      </div>
+    </div>
+  </nav>
+  <main class="max-w-4xl mx-auto px-4">
+    <h2 class="text-2xl font-bold mb-4">Workflows</h2>
+    <table class="min-w-full bg-white shadow rounded">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="py-2 px-4 text-left">Name</th>
+          <th class="py-2 px-4 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="workflowTable" class="divide-y divide-gray-200">
+        <!-- Rows will be inserted here -->
+      </tbody>
+    </table>
+    <div id="message" class="mt-4 text-sm text-red-600"></div>
+  </main>
+  <script>
+    const API_BASE = 'http://localhost:8080';
+    async function loadWorkflows() {
+      try {
+        const res = await fetch(`${API_BASE}/api/workflows`);
+        const data = await res.json();
+        const tbody = document.getElementById('workflowTable');
+        tbody.innerHTML = '';
+        data.forEach(wf => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td class="py-2 px-4">${wf.name}</td>
+            <td class="py-2 px-4 space-x-2">
+              <a href="edit.html?id=${wf.id}" class="text-blue-600">Edit</a>
+              <a href="run.html?id=${wf.id}" class="text-green-600">Run</a>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        document.getElementById('message').textContent = 'Failed to load workflows';
+      }
+    }
+    loadWorkflows();
+  </script>
+</body>
+</html>
